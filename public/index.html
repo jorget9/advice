@@ -32,7 +32,7 @@ input[type=submit] {
 input[type=submit]:hover {
     background-color: #45a049;
 }
-div {
+.graybox {
     border-radius: 5px;
     background-color: #f2f2f2;
     padding: 20px;
@@ -57,37 +57,43 @@ h1 {
 </head>
 <body>
 
-<h1>Post for Advice!</h1>
-  <div id="container">
-  
-  <div class="col-md-4">
-    <form id="helpform">
-      <label for="Title">Title</label>
-      <input type="text" id="title" placeholder="Title">
+<div id="container">
 
-      <label for="Text">Text</label>
-      <input type="text" id="helptext" placeholder="Text" style="height: 150px;resize: none;">
-      <input type="submit" value="send">
-    </form>
+  <div class="col-md-4">
+    <div class="graybox">
+      <h1>Post for Advice!</h1>
+
+      <form id="helpform">
+        <label for="Title">Title</label>
+        <input type="text" id="title" placeholder="Title">
+
+        <label for="Text">Text</label>
+        <input type="text" id="helptext" placeholder="Text" style="height: 150px;resize: none;">
+        <input type="submit" value="send">
+      </form>
+    </div>
   </div>
 
   <div class="col-md-8">
-    <div id="help-holder">
-      <h2 id="public-title"></h2>
-      <p id="public-helptext"></p>
+    <div class="graybox">
+      <div id="help-holder">
+        <h2 id="public-title"></h2>
+        <p id="public-helptext"></p>
 
-  <div id="chats"></div>  
-    <div class="chat" v-for="chat in chats">
-      <span class="message">Anonymous: {{chat.message}}</span>
+        <div id="chats">  
+          <div class="chat" v-for="chat in chats">
+            <span class="message">Anonymous: {{chat.message}}</span>
+          </div>
+        </div>
+        <form id="chat-form" v-on:submit="sendChat">
+          <input placeholder="message" type="text" id="message" v-model="message">
+          <input type="submit" value="send">
+        </form>
+      </div>
     </div>
 
-  <form id="chat-form" v-on:submit="sendChat">
-    <input placeholder="message" type="text" id="message" v-model="message">
-    <input type="submit" value="send">
-  </form>
   </div>
-
-  </div>
+</div>
 
 <script src="/socket.io/socket.io.js"></script>
 <script src="https://unpkg.com/vue"></script>
@@ -106,7 +112,7 @@ var vm = new Vue({
     username: '',
     message: '',
   },
-created: function() {
+  created: function() {
   },
   methods: {
     sendChat: function(e) {
