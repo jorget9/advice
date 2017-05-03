@@ -63,22 +63,22 @@ h1 {
     <div class="graybox">
       <h1>Post for Advice!</h1>
 
-      <form id="helpform">
+      <form id="helpform" v-on:submit="sendTitle">
         <label for="Title">Title</label>
-        <input type="text" id="title" placeholder="Title">
-
+        <input type="text" id="title" placeholder="Title" v-model="title">
         <label for="Text">Text</label>
-        <input type="text" id="helptext" placeholder="Text" style="height: 150px;resize: none;">
+        <input type="text" id="helptext" v-model="text" placeholder="Text" style="height: 150px;resize: none;">
         <input type="submit" value="send">
       </form>
+    
     </div>
   </div>
 
   <div class="col-md-8">
     <div class="graybox">
       <div id="help-holder">
-        <h2 id="public-title"></h2>
-        <p id="public-helptext"></p>
+        <h2 id="public-title">{{title}}</h2>
+        <p id="public-helptext">{{text}}</p>
 
         <div id="chats">  
           <div class="chat" v-for="chat in chats">
@@ -111,6 +111,8 @@ var vm = new Vue({
     chats: [],
     username: '',
     message: '',
+    title: '',
+    text: ''
   },
   created: function() {
   },
@@ -123,7 +125,7 @@ var vm = new Vue({
         this.message = '';
       }
     },
-    updateChats(message) {
+    updateChats: function(message) {
       console.log(message);
       this.chats.push({message: message});
       this.$nextTick(function() {
@@ -131,12 +133,24 @@ var vm = new Vue({
         chats.scrollTop = chats.scrollHeight;
       });
     },
+    sendTitle: function(e) {
+      e.preventDefault();
+      socket.emit('message', {title: this.title, text: this.text})
+    }
   }
 });
 // var socket = io.connect(window.location.origin);
 socket.on('message', function(data){
   //console.log(data)
-  vm.updateChats(data.message, data.image);
+  if (data.message) {
+    vm.updateChats(data.message);
+  }
+
+  if (data.title && data.text){
+    vm.title = data.title;
+    vm.text = data.text;
+
+  }
 });
 socket.on('initialize', function(data){
   vm.chats = data;
