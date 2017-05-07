@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Advice Column</title>
+   <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+  <style>
+  .container{
+    background-color:#EEEEEE;
+  }
+input[type=text], select {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+input[type=submit] {
+    width: 100%;
+    background-color: #4CAF50;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+input[type=submit]:hover {
+    background-color: #45a049;
+}
+
+.jumbotron{
+  text-align: center;
+  background-color: #1E88E5;
+  color: white;
+}
+
+h2 {
+  margin-left: 30px;
+}
+#chats {
+      background-color: #fff;
+      border-bottom: 1px solid #ccc;
+      margin: 8px 0;
+      height: 300px;
+      overflow: scroll;
+    }
+   .chat {
+      padding: 5px;
+      margin-bottom: 5px;
+      border-bottom: 1px solid #ccc;
+    }
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+th, td {
+    text-align: left;
+    padding: 8px;
+}
+
+tr:nth-child(even){background-color: #f2f2f2}
+
+th {
+    background-color: #EF6C00;
+    color: white;
+}
+.graybox {
+    border-radius: 5px;
+    background-color: #f2f2f2;
+    padding: 20px;
+}
+</style>
+</head>
+<body>
+
+<div id="container">
+  <div class="jumbotron">
+    <h1>Advice Forum</h1>      
+    <p>Get your questions asked below!</p>
+  </div>
+  <div class="col-md-9">
+    <table>
+      <tr>
+        <th>Main Forums</th>
+        <th>Last Posts</th>
+      </tr>
+      <tr>
+        <td><img src="life.jpg" style="width: 75px;float: left;"><h2 style="float: left;">Life Advice</h2>
+    </td>
+        <td>Griffin</td>
+      </tr>
+      <tr>
+        <td><img src="life.jpg" style="width: 75px;float: left;"><h2 style="float: left;">Life Advice</h2>
+        <td>Griffin</td>
+      </tr>
+      <tr>
+        <td><img src="life.jpg" style="width: 75px;float: left;"><h2 style="float: left;">Life Advice</h2>
+        <td>Swanson</td>
+      </tr>
+      <tr>
+        <td><img src="life.jpg" style="width: 75px;float: left;"><h2 style="float: left;">Life Advice</h2>
+        <td>Brown</td>
+      </tr>
+    </table>
+  </div>
+  <div class="col-md-3">
+    <div class="graybox">
+      <h3 style="text-align: center; border-bottom: 1px solid grey; margin-bottom: 15px;">Advice</h3>
+      <p>Rules:</p>
+    </div>
+  </div>
+</div>
+
+
+
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="https://unpkg.com/vue"></script>
+
+<script>
+
+var socket = io.connect(window.location.origin);
+
+// var titleInput = $('#title');
+// var helptextInput = $('#helptext');
+// var helpform = $('#helpform');
+var vm = new Vue({
+  el: '#container',
+  data: {
+    chats: [],
+    username: '',
+    message: '',
+    title: '',
+    text: ''
+  },
+  created: function() {
+  },
+  methods: {
+    sendChat: function(e) {
+      e.preventDefault();
+      if (this.message) {
+        socket.emit('message', {message: this.message});
+        this.updateChats(this.message);
+        this.message = '';
+      }
+    },
+    updateChats: function(message) {
+      console.log(message);
+      this.chats.push({message: message});
+      this.$nextTick(function() {
+        var chats = this.$el.querySelector("#chats");
+        chats.scrollTop = chats.scrollHeight;
+      });
+    },
+    sendTitle: function(e) {
+      e.preventDefault();
+      socket.emit('message', {title: this.title, text: this.text})
+    }
+  }
+});
+// var socket = io.connect(window.location.origin);
+socket.on('message', function(data){
+  //console.log(data)
+  if (data.message) {
+    vm.updateChats(data.message);
+  }
+
+  if (data.title && data.text){
+    vm.title = data.title;
+    vm.text = data.text;
+
+  }
+});
+socket.on('initialize', function(data){
+  vm.chats = data;
+  vm.$nextTick(function() {
+    var chats = vm.$el.querySelector("#chats");
+    chats.scrollTop = chats.scrollHeight;
+  });
+});
+
+</script>
+
+</body>
+</html>
