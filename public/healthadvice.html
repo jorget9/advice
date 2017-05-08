@@ -10,9 +10,6 @@
 
     <link href="css/bootstrap.min.css" rel="stylesheet">
   <style>
-  .container{
-    background-color:#EEEEEE;
-  }
 input[type=text], select {
     width: 100%;
     padding: 12px 20px;
@@ -35,15 +32,14 @@ input[type=submit] {
 input[type=submit]:hover {
     background-color: #45a049;
 }
-
-.jumbotron{
-  text-align: center;
-  background-color: #1E88E5;
-  color: white;
+.graybox {
+    border-radius: 5px;
+    background-color: #f2f2f2;
+    padding: 20px;
 }
 
-h2 {
-  margin-left: 30px;
+h1 {
+  //**margin-left: 30px;**//
 }
 #chats {
       background-color: #fff;
@@ -57,85 +53,59 @@ h2 {
       margin-bottom: 5px;
       border-bottom: 1px solid #ccc;
     }
-
-table {
-    border-collapse: collapse;
-    width: 100%;
-}
-
-th, td {
-    text-align: left;
-    padding: 8px;
-}
-
-tr:nth-child(even){background-color: #f2f2f2}
-
-th {
-    background-color: #EF6C00;
-    color: white;
-}
-.graybox {
-    border-radius: 5px;
-    background-color: #f2f2f2;
-    padding: 20px;
-}
 </style>
 </head>
 <body>
 
 <div id="container">
-  <div class="jumbotron">
-    <h1>Advice Forum</h1>      
-    <p>Get your questions asked below!</p>
-  </div>
-  <div class="col-md-9">
-    <table>
-      <tr>
-        <th>Main Forums</th>
-        <th>Description</th>
-      </tr>
-      <tr>
-        <td>
-          <a href="lifeadvice.html"><img src="life.png" style="width: 75px;float: left;"><h2 style="float: left;">Life Advice</h2></a>
-        </td>
-        <td>Get your life together.</td>
-      </tr>
-      <tr>
-        <td><a href="relationshipadvice.html"><img src="relationship.png" style="width: 75px;float: left;"><h2 style="float: left;">Relationship Advice</h2></a>
-        <td>Get help regarding that special someone.</td>
-      </tr>
-      <tr>
-        <td><a href="healthadvice.html"><img src="health.png" style="width: 75px;float: left;"><h2 style="float: left;">Health Advice</h2></a>
-        <td>Get help to live a healthier life.</td>
-      </tr>
-      <tr>
-        <td><a href="workoutadvice.html"><img src="workout.png" style="width: 75px;float: left;"><h2 style="float: left;">Workout Advice</h2></a>
-        <td>Get help to get stronger.</td>
-      </tr>
-    </table>
-  </div>
-  <div class="col-md-3">
+
+  <div class="col-md-4">
     <div class="graybox">
-      <h3 style="text-align: center; border-bottom: 1px solid grey; margin-bottom: 15px;">Advice Forum</h3>
-      <p>Rules:</p>
-      <li  style="list-style-type: none;">
-        <ol>This is a place where you can ask for advice on any subject. Everybody has issues that they run into, and everyone needs advice every now and again.</ol>
-        <ol>Be nice</ol>
-        <ol>Post must ask for advice</ol>
-      </li>
+    <a href="index.html">
+        <button type="button" class="btn btn-default" aria-label="Left Align">
+        <span class="glyphicon glyphicon-home" aria-hidden="true"></span>
+        </button>
+      </a>
+      <h1>Health Advice</h1>
+
+      <form id="helpform" v-on:submit="sendTitle">
+        <label for="Title">Title</label>
+        <input type="text" id="title" placeholder="Title" v-model="title">
+        <label for="Text">Text</label>
+        <input type="text" id="helptext" v-model="text" placeholder="Text" style="height: 150px;resize: none;">
+        <input style="background-color: red;" type="submit" value="send">
+      </form>
+    
     </div>
   </div>
+
+  <div class="col-md-8">
+    <div class="graybox">
+      <div id="help-holder">
+        <h2 id="public-title">{{title}}</h2>
+        <p id="public-helptext">{{text}}</p>
+
+        <div id="chats">  
+          <div class="chat" v-for="chat in chats">
+            <span class="message">Anonymous: {{chat.message}}</span>
+          </div>
+        </div>
+        <form id="chat-form" v-on:submit="sendChat">
+          <input placeholder="message" type="text" id="message" v-model="message">
+          <input style="background-color: red;" type="submit" value="send">
+        </form>
+      </div>
+    </div>
+
+  </div>
 </div>
-
-
-
 
 <script src="/socket.io/socket.io.js"></script>
 <script src="https://unpkg.com/vue"></script>
 
 <script>
 
-var socket = io.connect(window.location.origin);
+var socket = io.connect(window.location.origin)
 
 // var titleInput = $('#title');
 // var helptextInput = $('#helptext');
